@@ -31,3 +31,12 @@ model User {
   password  String
   createdAt DateTime @default(now())
 }
+
+model CallAnalytics {
+  id         String   @id @default(uuid())
+  callId     String
+  branch     String   // "CACHE", "FAQ", "WORKFLOW", "LLM"
+  tokenCount Int?     // only populated for LLM branch
+  latencyMs  Int      // how long the branch took in ms
+  createdAt  DateTime @default(now())
+}
