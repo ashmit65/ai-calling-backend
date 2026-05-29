@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <title>AI Calling Backend - Microphone Test</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f4f4f9; }
+    button { padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 8px; border: none; background: #007bff; color: white; transition: background 0.3s; }
+    button:hover { background: #0056b3; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    #status { margin-top: 20px; font-weight: bold; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>AI Calling Audio Simulator</h1>
+  <button id="start">Start Call (5s Echo Test)</button>
+  <p id="status">Ready</p>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io('ws://localhost:3000');
+    const startBtn = document.getElementById('start');
+    const statusText = document.getElementById('status');
+
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server', socket.id);
+    });
+
+    socket.on('audio-echo', data => {
+      // play back whatever you receive (just for echo test)
+      console.log('Received audio echo buffer');
+      const audio = new Audio(URL.createObjectURL(new Blob([data])));
+      audio.play();
+    });
+
+    startBtn.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const chunks = [];
+        
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
+          const blob = new Blob(chunks);
+          // Convert Blob to ArrayBuffer and send via Socket.io
+          blob.arrayBuffer().then(buffer => {
+            socket.emit('audio', buffer); // send raw bytes to Nest
+            statusText.innerText = 'Call ended. Echo should play now!';
+            startBtn.disabled = false;
+          });
+        };
+        
+        recorder.start();
+        statusText.innerText = 'Recording... Please speak! (5 seconds)';
+        startBtn.disabled = true;
+        
+        setTimeout(() => {
+          recorder.stop();
+          stream.getTracks().forEach(track => track.stop()); // release mic
+        }, 5000); // record ~5s then stop
+
+      } catch (err) {
+        console.error('Error accessing microphone', err);
+        statusText.innerText = 'Microphone access denied or error occurred.';
+      }
+    };
+  </script>
+</body>
+</html>

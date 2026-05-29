@@ -13,10 +13,16 @@ import { FaqModule } from './faq/faq.module';
 import { LlmModule } from './llm/llm.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { AiModule } from './ai/ai.module';
+import { AudioModule } from './audio/audio.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'),
+    }),
     CallsModule,
     WorkflowsModule,
     TranscriptsModule,
@@ -28,6 +34,7 @@ import { AiModule } from './ai/ai.module';
     LlmModule,
     AnalyticsModule,
     AiModule,
+    AudioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
