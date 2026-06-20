@@ -8,6 +8,48 @@ A backend service built with [NestJS](https://nestjs.com/), designed to handle A
 - **ORM:** Prisma
 - **Caching/Queueing:** Redis (via BullMQ)
 
+## Architecture
+
+Below is the high-level architecture showing how the client interfaces with the NestJS application layers, services, and backing stores:
+
+```mermaid
+graph TD
+    Client["Client (HTML Simulator / REST client)"]
+    Gateway["AudioGateway (WebSockets)"]
+    Controller["CallsController (REST API)"]
+    CallsSvc["CallsService (Core Orchestrator)"]
+    
+    IntentSvc["IntentService (Intent Detection)"]
+    FaqSvc["FaqService (FAQ Lookup)"]
+    WorkflowSvc["WorkflowsService (Workflow Actions)"]
+    LlmSvc["LlmService (NVIDIA LLM Fallback)"]
+    AnalyticsSvc["AnalyticsService (Metrics Tracker)"]
+    
+    Redis["CacheService (Redis Caching)"]
+    Prisma["PrismaService (PostgreSQL Database)"]
+
+    %% Flow connections
+    Client -->|WebSocket / audio chunks| Gateway
+    Client -->|POST /calls| Controller
+    
+    Gateway -.->|Transcript processing| CallsSvc
+    Controller -->|Triggers process| CallsSvc
+    
+    CallsSvc -->|1. Classify transcript| IntentSvc
+    IntentSvc <-->|Cache check/write| Redis
+    
+    CallsSvc -->|2. Log session| Prisma
+    
+    CallsSvc -->|3. Route branch| FaqSvc
+    CallsSvc -->|3. Route branch| WorkflowSvc
+    CallsSvc -->|3. Route branch| LlmSvc
+    
+    LlmSvc -->|External API request| NVIDIA["NVIDIA API (Llama 3.1)"]
+    
+    CallsSvc -->|4. Log metadata & latency| AnalyticsSvc
+    AnalyticsSvc -->|Persist analytics| Prisma
+```
+
 ## Getting Started
 
 ### 1. Prerequisites
