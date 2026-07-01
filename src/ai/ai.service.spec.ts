@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiService } from './ai.service';
 
+process.env.NVIDIA_API_KEY = 'mock-key';
+
 describe('AiService', () => {
   let service: AiService;
 

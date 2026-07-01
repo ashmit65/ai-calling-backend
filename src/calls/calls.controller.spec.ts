@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CallsController } from './calls.controller';
+import { CallsService } from './calls.service';
+import { ConversationOrchestrator } from '../orchestrator/orchestrator.service';
 
 describe('CallsController', () => {
   let controller: CallsController;
@@ -7,6 +9,20 @@ describe('CallsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CallsController],
+      providers: [
+        {
+          provide: CallsService,
+          useValue: {
+            findAllCalls: jest.fn(),
+          },
+        },
+        {
+          provide: ConversationOrchestrator,
+          useValue: {
+            process: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<CallsController>(CallsController);

@@ -15,6 +15,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { AiModule } from './ai/ai.module';
 import { AudioModule } from './audio/audio.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { OrchestratorModule } from './orchestrator/orchestrator.module';
 import { join } from 'path';
 
 @Module({
@@ -35,6 +36,7 @@ import { join } from 'path';
     AnalyticsModule,
     AiModule,
     AudioModule,
+    OrchestratorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

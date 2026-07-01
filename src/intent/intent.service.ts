@@ -11,21 +11,37 @@ import { Injectable } from '@nestjs/common';
   export class IntentService {
     constructor(private readonly cache: CacheService) {}
 
-    async detect(transcript: string): Promise<Intent> {
+    async detect(transcript: string): Promise<{ intent: Intent; confidence: number }> {
       const cacheKey = `intent:${Buffer.from(transcript).toString('base64')}`;
       const cached = await this.cache.get(cacheKey);
-      if (cached) return cached as Intent;
-
-      // simple rule‑based detection (placeholder)
-      let intent: Intent = Intent.UNKNOWN;
-      const lowered = transcript.toLowerCase();
-      if (lowered.includes('price') || lowered.includes('faq')) {
-        intent = Intent.FAQ;
-      } else if (lowered.includes('book') || lowered.includes('schedule')) {
-        intent = Intent.WORKFLOW;
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed && typeof parsed === 'object' && 'intent' in parsed) {
+            return { intent: parsed.intent as Intent, confidence: parsed.confidence ?? 0.5 };
+          }
+        } catch (e) {
+          // Fallback if cached value is not valid JSON (old cache format)
+          return { intent: cached as Intent, confidence: 1.0 };
+        }
       }
 
-      await this.cache.set(cacheKey, intent);
-      return intent;
+      // simple rule‑based detection with continuous confidence score
+      let intent: Intent = Intent.UNKNOWN;
+      let confidence = 0.1;
+      const lowered = transcript.toLowerCase();
+
+      if (lowered.includes('price') || lowered.includes('faq') || lowered.includes('cost') || lowered.includes('pricing')) {
+        intent = Intent.FAQ;
+        // higher confidence if it starts with the keyword, otherwise medium confidence
+        confidence = (lowered.startsWith('price') || lowered.startsWith('faq')) ? 0.95 : 0.75;
+      } else if (lowered.includes('book') || lowered.includes('schedule') || lowered.includes('cancel') || lowered.includes('appointment')) {
+        intent = Intent.WORKFLOW;
+        confidence = (lowered.startsWith('book') || lowered.startsWith('schedule') || lowered.startsWith('cancel')) ? 0.95 : 0.75;
+      }
+
+      const result = { intent, confidence };
+      await this.cache.set(cacheKey, JSON.stringify(result));
+      return result;
     }
   }

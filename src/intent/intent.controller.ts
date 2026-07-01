@@ -6,8 +6,8 @@ export class IntentController {
   constructor(private readonly intentService: IntentService) {}
 
   @Post()
-  detectIntent(@Body('transcript') transcript: string) {
-    const intent = this.intentService.detect(transcript);
-    return { intent };
+  async detectIntent(@Body('transcript') transcript: string) {
+    const result = await this.intentService.detect(transcript);
+    return result;
   }
 }
