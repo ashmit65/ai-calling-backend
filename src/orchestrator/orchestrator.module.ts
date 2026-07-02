@@ -25,17 +25,15 @@ import { AnalyticsModule } from '../analytics/analytics.module';
   providers: [
     DecisionEngine,
     ConversationOrchestrator,
+    FaqHandler,
+    WorkflowHandler,
+    LlmHandler,
     {
       provide: CONVERSATION_HANDLERS,
-      useClass: FaqHandler,
-    },
-    {
-      provide: CONVERSATION_HANDLERS,
-      useClass: WorkflowHandler,
-    },
-    {
-      provide: CONVERSATION_HANDLERS,
-      useClass: LlmHandler,
+      useFactory: (faq: FaqHandler, workflow: WorkflowHandler, llm: LlmHandler) => {
+        return [faq, workflow, llm];
+      },
+      inject: [FaqHandler, WorkflowHandler, LlmHandler],
     },
   ],
   exports: [ConversationOrchestrator],
