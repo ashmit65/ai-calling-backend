@@ -16,11 +16,13 @@ import { AiModule } from './ai/ai.module';
 import { AudioModule } from './audio/audio.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { OrchestratorModule } from './orchestrator/orchestrator.module';
+import { SttModule } from './media/stt/stt.module';
+import { TtsModule } from './media/tts/tts.module';
 import { join } from 'path';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'),
     }),
@@ -37,6 +39,8 @@ import { join } from 'path';
     AiModule,
     AudioModule,
     OrchestratorModule,
+    SttModule,
+    TtsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

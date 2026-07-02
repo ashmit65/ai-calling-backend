@@ -19,5 +19,6 @@ import { AnalyticsModule } from '../analytics/analytics.module';
   ],
   controllers: [CallsController],
   providers: [CallsService],
+  exports: [CallsService],
 })
 export class CallsModule {}
