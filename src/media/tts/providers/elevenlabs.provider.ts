@@ -20,8 +20,8 @@ export class ElevenLabsProvider implements ITtsProvider {
       throw new InternalServerErrorException('TTS service configuration error: Missing credentials.');
     }
 
-    const voiceId = this.configService.get<string>('ELEVENLABS_VOICE_ID', '21m00Tcm4TlvDq8ikWAM'); // Rachel (default)
-    const model = this.configService.get<string>('ELEVENLABS_MODEL', 'eleven_monolingual_v1');
+    const voiceId = this.configService.get<string>('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJmB'); // Adam (default)
+    const model = this.configService.get<string>('ELEVENLABS_MODEL', 'eleven_flash_v2_5');
     const outputFormat = this.configService.get<string>('ELEVENLABS_OUTPUT_FORMAT', 'mp3_44100_128');
 
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=${outputFormat}`;

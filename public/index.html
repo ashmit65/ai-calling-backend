@@ -14,6 +14,7 @@
   <h1>AI Calling Audio Simulator</h1>
   <button id="start">Start Call (5s Echo Test)</button>
   <p id="status">Ready</p>
+  <p id="ai-response" style="display: none; margin-top: 30px; font-size: 20px; color: #28a745; font-weight: bold; background: #e9ecef; padding: 15px; border-radius: 8px;"></p>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
@@ -30,6 +31,11 @@
       console.log('Received audio echo buffer');
       const audio = new Audio(URL.createObjectURL(new Blob([data])));
       audio.play();
+    });
+
+    socket.on('ai-text', text => {
+      document.getElementById('ai-response').style.display = 'block';
+      document.getElementById('ai-response').innerText = "🤖 AI says: " + text;
     });
 
     startBtn.onclick = async () => {
