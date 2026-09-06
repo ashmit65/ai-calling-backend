@@ -53,6 +53,7 @@ export class AudioGateway {
 
       // 4. Send the generated AI voice bytes back to the caller
       client.emit('audio-echo', ttsResult.audio);
+      client.emit('ai-text', orchestratorResponse.text); // Send text to frontend for visual feedback
       
       this.logger.log(`Successfully streamed audio response back to ${client.id}`);
       

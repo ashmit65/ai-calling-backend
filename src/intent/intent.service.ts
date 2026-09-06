@@ -31,10 +31,10 @@ import { Injectable } from '@nestjs/common';
       let confidence = 0.1;
       const lowered = transcript.toLowerCase();
 
-      if (lowered.includes('price') || lowered.includes('faq') || lowered.includes('cost') || lowered.includes('pricing')) {
+      if (lowered.includes('price') || lowered.includes('faq') || lowered.includes('cost') || lowered.includes('pricing') || lowered.includes('time') || lowered.includes('hours') || lowered.includes('open')) {
         intent = Intent.FAQ;
         // higher confidence if it starts with the keyword, otherwise medium confidence
-        confidence = (lowered.startsWith('price') || lowered.startsWith('faq')) ? 0.95 : 0.75;
+        confidence = (lowered.startsWith('price') || lowered.startsWith('faq')) ? 0.95 : 0.85;
       } else if (lowered.includes('book') || lowered.includes('schedule') || lowered.includes('cancel') || lowered.includes('appointment')) {
         intent = Intent.WORKFLOW;
         confidence = (lowered.startsWith('book') || lowered.startsWith('schedule') || lowered.startsWith('cancel')) ? 0.95 : 0.75;
