@@ -40,6 +40,9 @@ export class AudioGateway {
         return;
       }
 
+      // Send what the user said back to the frontend UI
+      client.emit('user-text', sttResult.transcript);
+
       // 2. Process the text through the brain (Intent, NLP, and Logging)
       const orchestratorResponse = await this.orchestrator.process({
         phone: client.id, // using client ID as phone number for local testing
