@@ -1,40 +1,56 @@
 const socket = io('ws://localhost:3000');
 const startBtn = document.getElementById('start');
+const btnText = document.getElementById('btn-text');
 const statusText = document.getElementById('status-text');
 const statusDot = document.getElementById('status-dot');
-const orb = document.getElementById('orb');
 const chatLog = document.getElementById('chat-log');
 
 let isCallActive = false;
 
 // Helpers
 function appendBubble(text, sender) {
+  const container = document.createElement('div');
+  container.className = `bubble-container ${sender}`;
+  
   const bubble = document.createElement('div');
-  bubble.className = `bubble ${sender}`;
+  bubble.className = 'bubble';
   bubble.innerText = text;
-  chatLog.appendChild(bubble);
+  
+  const time = document.createElement('div');
+  time.className = 'timestamp';
+  const now = new Date();
+  time.innerText = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+  
+  container.appendChild(bubble);
+  container.appendChild(time);
+  
+  chatLog.appendChild(container);
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-function setStatus(text, color, orbState) {
+function setStatus(text, dotClass = '') {
   statusText.innerText = text;
-  statusDot.style.background = color;
-  
-  orb.className = 'orb'; // reset
-  if (orbState) {
-    orb.classList.add(orbState);
+  statusDot.className = 'status-dot';
+  if (dotClass) {
+    statusDot.classList.add(dotClass);
   }
+}
+
+function setBtnState(text, disabled) {
+  btnText.innerText = text;
+  startBtn.disabled = disabled;
 }
 
 // Socket Events
 socket.on('connect', () => {
   console.log('Connected to WebSocket server', socket.id);
-  startBtn.disabled = false;
+  setStatus('Online');
+  setBtnState('Start Call', false);
 });
 
 socket.on('disconnect', () => {
-  setStatus('Disconnected from server', '#ef4444', null);
-  startBtn.disabled = true;
+  setStatus('Offline', 'recording'); // red dot
+  setBtnState('Disconnected', true);
 });
 
 // Received transcription of what the user said
@@ -49,15 +65,14 @@ socket.on('ai-text', text => {
 
 // Received AI's audio response
 socket.on('audio-echo', data => {
-  setStatus('AI Speaking...', '#3b82f6', 'speaking');
+  setStatus('Speaking', 'speaking');
   
   const blob = new Blob([data], { type: 'audio/mpeg' });
   const audio = new Audio(URL.createObjectURL(blob));
   
   audio.onended = () => {
-    setStatus('Ready', '#22c55e', null);
-    startBtn.disabled = false;
-    startBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg> Start Call';
+    setStatus('Online');
+    setBtnState('Start Call', false);
     isCallActive = false;
   };
   
@@ -65,8 +80,8 @@ socket.on('audio-echo', data => {
 });
 
 socket.on('audio-error', error => {
-  setStatus('Error processing audio', '#ef4444', null);
-  startBtn.disabled = false;
+  setStatus('Error', 'recording');
+  setBtnState('Start Call', false);
   isCallActive = false;
 });
 
@@ -83,7 +98,8 @@ startBtn.onclick = async () => {
     recorder.ondataavailable = e => chunks.push(e.data);
     
     recorder.onstop = () => {
-      setStatus('Processing...', '#eab308', null);
+      setStatus('Thinking', 'thinking');
+      setBtnState('Processing...', true);
       const blob = new Blob(chunks);
       blob.arrayBuffer().then(buffer => {
         socket.emit('audio', buffer);
@@ -91,9 +107,8 @@ startBtn.onclick = async () => {
     };
     
     // Start recording UI
-    setStatus('Listening... (5s)', '#ef4444', 'recording');
-    startBtn.disabled = true;
-    startBtn.innerHTML = 'Recording...';
+    setStatus('Listening (5s)', 'recording');
+    setBtnState('Recording...', true);
     
     recorder.start();
     
@@ -107,7 +122,8 @@ startBtn.onclick = async () => {
 
   } catch (err) {
     console.error('Error accessing microphone', err);
-    setStatus('Microphone access denied', '#ef4444', null);
+    setStatus('Mic Access Denied', 'recording');
+    setBtnState('Start Call', false);
     isCallActive = false;
   }
 };

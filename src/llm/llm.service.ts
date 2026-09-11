@@ -21,7 +21,7 @@ export class LlmService {
   async ask(transcript: string): Promise<LlmResult> {
     try {
       const completion = await this.client.chat.completions.create({
-        model: 'meta/llama-3.1-8b-instruct',
+        model: 'nvidia/llama-3.1-nemotron-70b-instruct',
         max_tokens: 300,
         messages: [
           {
