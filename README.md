@@ -1,97 +1,48 @@
-# AI Calling Backend
+# AI Calling Backend (Portfolio Project)
 
-A backend service built with [NestJS](https://nestjs.com/), designed to handle AI calling flows, intent detection, and logging. 
-
-## Tech Stack
-- **Framework:** NestJS
-- **Database:** PostgreSQL
-- **ORM:** Prisma
-- **Caching/Queueing:** Redis (via BullMQ)
+A real-time AI Voice Assistant backend built with NestJS. This platform accepts streaming audio over WebSockets, converts it to text, routes the user's intent to either a pre-defined FAQ or a dynamic LLM, and streams synthesized voice responses back to the frontend.
 
 ## Architecture
 
-Below is the high-level architecture showing how the client interfaces with the NestJS application layers, services, and backing stores:
+*   **Frontend:** A professional SaaS-style dashboard using vanilla JS and WebSockets.
+*   **Backend:** NestJS, TypeScript, Prisma (PostgreSQL), and Redis.
+*   **Speech-to-Text (STT):** Deepgram (Nova-2 model).
+*   **Intelligence:** 
+    *   **Intent Router:** Custom matching engine.
+    *   **LLM:** NVIDIA NIM (`nemotron-70b-instruct`) for conversational responses.
+*   **Text-to-Speech (TTS):** ElevenLabs (`eleven_flash_v2_5` with "Antoni" voice).
 
-```mermaid
-graph TD
-    Client["Client (HTML Simulator / REST client)"]
-    Gateway["AudioGateway (WebSockets)"]
-    Controller["CallsController (REST API)"]
-    CallsSvc["CallsService (Core Orchestrator)"]
-    
-    IntentSvc["IntentService (Intent Detection)"]
-    FaqSvc["FaqService (FAQ Lookup)"]
-    WorkflowSvc["WorkflowsService (Workflow Actions)"]
-    LlmSvc["LlmService (NVIDIA LLM Fallback)"]
-    AnalyticsSvc["AnalyticsService (Metrics Tracker)"]
-    
-    Redis["CacheService (Redis Caching)"]
-    Prisma["PrismaService (PostgreSQL Database)"]
+## Prerequisites
 
-    %% Flow connections
-    Client -->|WebSocket / audio chunks| Gateway
-    Client -->|POST /calls| Controller
-    
-    Gateway -.->|Transcript processing| CallsSvc
-    Controller -->|Triggers process| CallsSvc
-    
-    CallsSvc -->|1. Classify transcript| IntentSvc
-    IntentSvc <-->|Cache check/write| Redis
-    
-    CallsSvc -->|2. Log session| Prisma
-    
-    CallsSvc -->|3. Route branch| FaqSvc
-    CallsSvc -->|3. Route branch| WorkflowSvc
-    CallsSvc -->|3. Route branch| LlmSvc
-    
-    LlmSvc -->|External API request| NVIDIA["NVIDIA API (Llama 3.1)"]
-    
-    CallsSvc -->|4. Log metadata & latency| AnalyticsSvc
-    AnalyticsSvc -->|Persist analytics| Prisma
-```
+1.  Docker & Docker Compose
+2.  Node.js v18+
+3.  API Keys for Deepgram, NVIDIA NIM, and ElevenLabs.
 
-## Getting Started
+## Setup Instructions
 
-### 1. Prerequisites
-- [Node.js](https://nodejs.org/en/) (v16+ recommended)
-- [Docker & Docker Desktop](https://www.docker.com/products/docker-desktop) (for running Postgres & Redis locally)
+1.  **Environment Variables**
+    Create a `.env` file in the root directory matching `.env.example`, and fill in your keys:
+    ```env
+    DATABASE_URL="postgresql://postgres:postgres@localhost:5433/aicalling?schema=public"
+    NVIDIA_API_KEY="your-nvidia-key"
+    STT_PROVIDER=deepgram
+    DEEPGRAM_API_KEY="your-deepgram-key"
+    TTS_PROVIDER=elevenlabs
+    ELEVENLABS_API_KEY="your-elevenlabs-key"
+    ELEVENLABS_MODEL="eleven_flash_v2_5"
+    ELEVENLABS_VOICE_ID="ErXwobaYiN019PkySvjV"
+    ```
 
-### 2. Infrastructure Setup
-Make sure Docker Desktop is running, then start the local PostgreSQL and Redis containers in the background:
-```bash
-docker-compose up -d
-```
+2.  **Start the Databases**
+    ```bash
+    docker compose up -d
+    ```
 
-### 3. Install Dependencies
-```bash
-npm install
-```
+3.  **Install & Run**
+    ```bash
+    npm install
+    npm run start:dev
+    ```
 
-### 4. Database Setup
-Ensure your `.env` file is set up with your database URL, then push the Prisma schema to create your tables:
-```bash
-npx prisma db push
-```
-*(If you make changes to `schema.prisma`, run `npx prisma generate` to update the client).*
-
-### 5. Running the App
-```bash
-# development
-npm run start
-
-# watch mode (recommended)
-npm run start:dev
-
-# production mode
-npm run start:prod
-```
-
-## Documentation
-
-For a detailed breakdown of the database schema, internal modules, and flow, please refer to the [Project Flow Document](./PROJECT_FLOW.md).
-
-## Core API Endpoints
-
-- `GET /calls`: Retrieves all call records.
-- `POST /calls`: Creates a new call record. It will automatically parse the `transcript` to detect the `intent`.
-- `POST /intent`: A standalone endpoint to detect intent from a provided transcript.
+4.  **Test the Application**
+    Open your browser and navigate to `http://localhost:3000`. Click "Start Call" to begin speaking with the AI agent!
