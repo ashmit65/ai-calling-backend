@@ -15,7 +15,9 @@ export class CacheService {
       }
       return await this.client.get(key);
     } catch (err) {
-      this.logger.warn(`Redis get failed: ${err.message}. Falling back to cache miss.`);
+      this.logger.warn(
+        `Redis get failed: ${err.message}. Falling back to cache miss.`,
+      );
       return null;
     }
   }

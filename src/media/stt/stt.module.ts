@@ -13,8 +13,13 @@ import { SttController } from './stt.controller';
     SttService,
     {
       provide: STT_PROVIDER_TOKEN,
-      useFactory: (configService: ConfigService, deepgramProvider: DeepgramProvider) => {
-        const provider = configService.get<string>('STT_PROVIDER', 'deepgram').toLowerCase();
+      useFactory: (
+        configService: ConfigService,
+        deepgramProvider: DeepgramProvider,
+      ) => {
+        const provider = configService
+          .get<string>('STT_PROVIDER', 'deepgram')
+          .toLowerCase();
         if (provider === 'deepgram') {
           return deepgramProvider;
         }

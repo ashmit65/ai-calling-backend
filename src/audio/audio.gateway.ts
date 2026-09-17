@@ -1,4 +1,8 @@
-import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  SubscribeMessage,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { SttService } from '../media/stt/stt.service';
@@ -13,7 +17,7 @@ export class AudioGateway {
   constructor(
     private readonly sttService: SttService,
     private readonly orchestrator: ConversationOrchestrator,
-    private readonly ttsService: TtsService
+    private readonly ttsService: TtsService,
   ) {}
 
   handleConnection(client: any) {
@@ -27,12 +31,12 @@ export class AudioGateway {
   @SubscribeMessage('audio')
   async handleAudio(client: any, payload: any) {
     this.logger.log(`Received audio payload from client: ${client.id}`);
-    
+
     try {
       // 1. Convert incoming raw WebM/Ogg audio to text (STT)
       const audioBuffer = Buffer.from(payload);
       const sttResult = await this.sttService.transcribe(audioBuffer);
-      
+
       this.logger.log(`Transcribed text: "${sttResult.transcript}"`);
 
       if (!sttResult.transcript || sttResult.transcript.trim() === '') {
@@ -46,22 +50,28 @@ export class AudioGateway {
       // 2. Process the text through the brain (Intent, NLP, and Logging)
       const orchestratorResponse = await this.orchestrator.process({
         phone: client.id, // using client ID as phone number for local testing
-        transcript: sttResult.transcript
+        transcript: sttResult.transcript,
       });
 
       this.logger.log(`AI Response: "${orchestratorResponse.text}"`);
 
       // 3. Synthesize the AI's text response back into speech (TTS)
-      const ttsResult = await this.ttsService.synthesize(orchestratorResponse.text);
+      const ttsResult = await this.ttsService.synthesize(
+        orchestratorResponse.text,
+      );
 
       // 4. Send the generated AI voice bytes back to the caller
       client.emit('audio-echo', ttsResult.audio);
       client.emit('ai-text', orchestratorResponse.text); // Send text to frontend for visual feedback
-      
-      this.logger.log(`Successfully streamed audio response back to ${client.id}`);
-      
+
+      this.logger.log(
+        `Successfully streamed audio response back to ${client.id}`,
+      );
     } catch (error: any) {
-      this.logger.error(`Error in audio pipeline: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error in audio pipeline: ${error.message}`,
+        error.stack,
+      );
       // Optional: Emit an error event back to client
       client.emit('audio-error', { message: 'Failed to process audio.' });
     }

@@ -30,7 +30,11 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     LlmHandler,
     {
       provide: CONVERSATION_HANDLERS,
-      useFactory: (faq: FaqHandler, workflow: WorkflowHandler, llm: LlmHandler) => {
+      useFactory: (
+        faq: FaqHandler,
+        workflow: WorkflowHandler,
+        llm: LlmHandler,
+      ) => {
         return [faq, workflow, llm];
       },
       inject: [FaqHandler, WorkflowHandler, LlmHandler],

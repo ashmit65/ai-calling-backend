@@ -13,8 +13,13 @@ import { TtsController } from './tts.controller';
     TtsService,
     {
       provide: TTS_PROVIDER_TOKEN,
-      useFactory: (configService: ConfigService, elevenLabsProvider: ElevenLabsProvider) => {
-        const provider = configService.get<string>('TTS_PROVIDER', 'elevenlabs').toLowerCase();
+      useFactory: (
+        configService: ConfigService,
+        elevenLabsProvider: ElevenLabsProvider,
+      ) => {
+        const provider = configService
+          .get<string>('TTS_PROVIDER', 'elevenlabs')
+          .toLowerCase();
         if (provider === 'elevenlabs') {
           return elevenLabsProvider;
         }

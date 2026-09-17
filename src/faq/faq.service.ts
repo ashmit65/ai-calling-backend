@@ -8,7 +8,7 @@ interface FaqEntry {
 
 @Injectable()
 export class FaqService {
-  private readonly faqs: FaqEntry[] = faqData as FaqEntry[];
+  private readonly faqs: FaqEntry[] = faqData;
 
   lookup(transcript: string): { answer: string; matched: boolean } {
     const lowered = transcript.toLowerCase();
@@ -21,7 +21,8 @@ export class FaqService {
     }
 
     return {
-      answer: "I'm sorry, I don't have an answer for that. Let me connect you to an agent.",
+      answer:
+        "I'm sorry, I don't have an answer for that. Let me connect you to an agent.",
       matched: false,
     };
   }

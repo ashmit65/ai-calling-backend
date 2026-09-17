@@ -1,5 +1,7 @@
 # AI Calling Backend (Portfolio Project)
 
+![CI/CD Pipeline](https://github.com/ashmit65/ai-calling-backend/actions/workflows/ci.yml/badge.svg)
+
 A real-time AI Voice Assistant backend built with NestJS. This platform accepts streaming audio over WebSockets, converts it to text, routes the user's intent to either a pre-defined FAQ or a dynamic LLM, and streams synthesized voice responses back to the frontend.
 
 ## Architecture
