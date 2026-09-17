@@ -18,9 +18,7 @@ export class SttController {
   @Post()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadAudio(
-    @UploadedFile() file: any,
-  ): Promise<SttResponse> {
+  async uploadAudio(@UploadedFile() file: any): Promise<SttResponse> {
     if (!file) {
       throw new BadRequestException('Required file field "file" is missing.');
     }

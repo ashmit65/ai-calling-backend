@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ConversationHandler, HandlerIdentifier, ConversationResponse } from '../interfaces/conversation-handler.interface';
+import {
+  ConversationHandler,
+  HandlerIdentifier,
+  ConversationResponse,
+} from '../interfaces/conversation-handler.interface';
 import { ConversationContext } from '../interfaces/conversation-context.interface';
 import { LlmService } from '../../llm/llm.service';
 

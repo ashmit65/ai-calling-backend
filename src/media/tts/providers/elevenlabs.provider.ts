@@ -1,4 +1,9 @@
-import { Injectable, Logger, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { ITtsProvider, TtsResponse } from '../tts.interface';
@@ -11,21 +16,38 @@ export class ElevenLabsProvider implements ITtsProvider {
 
   async synthesize(text: string): Promise<TtsResponse> {
     if (!text || text.trim().length === 0) {
-      throw new BadRequestException('Text input to TTS synthesis cannot be empty.');
+      throw new BadRequestException(
+        'Text input to TTS synthesis cannot be empty.',
+      );
     }
 
     const apiKey = this.configService.get<string>('ELEVENLABS_API_KEY');
     if (!apiKey) {
-      this.logger.error('ElevenLabs API Key is not configured (ELEVENLABS_API_KEY is missing).');
-      throw new InternalServerErrorException('TTS service configuration error: Missing credentials.');
+      this.logger.error(
+        'ElevenLabs API Key is not configured (ELEVENLABS_API_KEY is missing).',
+      );
+      throw new InternalServerErrorException(
+        'TTS service configuration error: Missing credentials.',
+      );
     }
 
-    const voiceId = this.configService.get<string>('ELEVENLABS_VOICE_ID', 'ErXwobaYiN019PkySvjV'); // Antoni (default)
-    const model = this.configService.get<string>('ELEVENLABS_MODEL', 'eleven_flash_v2_5');
-    const outputFormat = this.configService.get<string>('ELEVENLABS_OUTPUT_FORMAT', 'mp3_44100_128');
+    const voiceId = this.configService.get<string>(
+      'ELEVENLABS_VOICE_ID',
+      'ErXwobaYiN019PkySvjV',
+    ); // Antoni (default)
+    const model = this.configService.get<string>(
+      'ELEVENLABS_MODEL',
+      'eleven_flash_v2_5',
+    );
+    const outputFormat = this.configService.get<string>(
+      'ELEVENLABS_OUTPUT_FORMAT',
+      'mp3_44100_128',
+    );
 
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=${outputFormat}`;
-    this.logger.log(`Synthesizing text: "${text.substring(0, 30)}..." using voice=${voiceId}, model=${model}`);
+    this.logger.log(
+      `Synthesizing text: "${text.substring(0, 30)}..." using voice=${voiceId}, model=${model}`,
+    );
 
     try {
       const response = await axios.post(
@@ -73,15 +95,23 @@ export class ElevenLabsProvider implements ITtsProvider {
         }
       }
 
-      this.logger.error(`ElevenLabs synthesis failed: Status=${status}, Message=${errorMsg}`);
+      this.logger.error(
+        `ElevenLabs synthesis failed: Status=${status}, Message=${errorMsg}`,
+      );
 
       if (status === 401 || status === 403) {
-        throw new InternalServerErrorException('Authentication failure with ElevenLabs TTS.');
+        throw new InternalServerErrorException(
+          'Authentication failure with ElevenLabs TTS.',
+        );
       } else if (status === 400) {
-        throw new BadRequestException(`Bad request to ElevenLabs TTS: ${errorMsg}`);
+        throw new BadRequestException(
+          `Bad request to ElevenLabs TTS: ${errorMsg}`,
+        );
       }
 
-      throw new InternalServerErrorException(`TTS synthesis failed: ${errorMsg}`);
+      throw new InternalServerErrorException(
+        `TTS synthesis failed: ${errorMsg}`,
+      );
     }
   }
 }

@@ -3,16 +3,10 @@ import { AiService } from './ai.service';
 
 @Controller('ai')
 export class AiController {
-
-  constructor(
-    private aiService: AiService
-  ) {}
+  constructor(private aiService: AiService) {}
 
   @Get()
-  async ask(
-    @Query('q') q:string
-  ){
+  async ask(@Query('q') q: string) {
     return this.aiService.ask(q);
   }
-
 }

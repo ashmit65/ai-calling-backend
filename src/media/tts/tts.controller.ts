@@ -1,4 +1,10 @@
-import { Controller, Post, Body, Res, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  BadRequestException,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { TtsService } from './tts.service';
 
@@ -12,7 +18,9 @@ export class TtsController {
     @Res() res: Response,
   ): Promise<void> {
     if (text === undefined || text === null || text.trim() === '') {
-      throw new BadRequestException('Required body parameter "text" is missing or empty.');
+      throw new BadRequestException(
+        'Required body parameter "text" is missing or empty.',
+      );
     }
 
     const ttsResult = await this.ttsService.synthesize(text);

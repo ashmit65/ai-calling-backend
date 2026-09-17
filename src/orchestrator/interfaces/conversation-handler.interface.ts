@@ -1,6 +1,11 @@
 import { ConversationContext } from './conversation-context.interface';
 
-export type HandlerIdentifier = 'faq' | 'workflow' | 'llm' | 'human-transfer' | 'voicemail';
+export type HandlerIdentifier =
+  | 'faq'
+  | 'workflow'
+  | 'llm'
+  | 'human-transfer'
+  | 'voicemail';
 
 export interface ConversationResponse {
   text: string;
