@@ -3,44 +3,351 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acme Corp - AI Support</title>
+  <title>VoxAI - Intelligent Voice Calling Platform</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="app-shell">
+    
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+      <div class="navbar-left">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div class="brand">
+          <div class="brand-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+              <line x1="8" y1="22" x2="16" y2="22"></line>
+            </svg>
+          </div>
+          <span class="brand-name">VoxAI <span class="brand-badge">PRO</span></span>
+        </div>
+      </div>
 
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-brand">
-        <div class="avatar">AI</div>
-        <div class="header-info">
-          <h1>Support Agent</h1>
-          <div class="status">
-            <div id="status-dot" class="status-dot"></div>
-            <span id="status-text">Online</span>
+      <div class="navbar-center">
+        <div class="search-bar">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" placeholder="Search sessions, logs, prompts..." />
+        </div>
+      </div>
+
+      <div class="navbar-right">
+        <div class="connection-pill">
+          <div id="status-dot" class="status-dot"></div>
+          <span id="status-text">Connecting...</span>
+        </div>
+        <div class="divider"></div>
+        <button class="icon-btn" title="Notifications">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </button>
+        <div class="user-profile">
+          <div class="user-avatar">JD</div>
+          <div class="user-info">
+            <span class="user-name">John Doe</span>
+            <span class="user-role">Developer</span>
           </div>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- Chat Log -->
-    <div id="chat-log" class="chat-log">
-      <!-- Chat bubbles will be injected here -->
-      <div class="bubble-container ai">
-        <div class="bubble">Hi! How can I help you today?</div>
-        <div class="timestamp">Just now</div>
-      </div>
-    </div>
+    <!-- Main Body with Sidebar and Views -->
+    <div class="app-body">
+      
+      <!-- Left Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="nav-group">
+          <div class="nav-label">MAIN</div>
+          <a class="nav-item active" data-tab="live-call">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+            <span>Live Call Demo</span>
+            <span class="badge live-badge">LIVE</span>
+          </a>
+          <a class="nav-item" data-tab="analytics">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2" />
+            </svg>
+            <span>Analytics & History</span>
+          </a>
+        </div>
 
-    <!-- Controls -->
-    <div class="controls">
-      <button id="start" class="call-btn" disabled>
-        <svg class="mic-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-        </svg>
-        <span id="btn-text">Connecting...</span>
-      </button>
+        <div class="nav-group">
+          <div class="nav-label">CONFIGURATION</div>
+          <a class="nav-item" data-tab="settings">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>Agent Settings</span>
+          </a>
+          <a class="nav-item" data-tab="logs">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Developer Logs</span>
+          </a>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="system-status-card">
+            <div class="status-header">
+              <span class="status-indicator-dot"></span>
+              <span class="status-title">NVIDIA Llama 3.1</span>
+            </div>
+            <p class="status-sub">Latency ~240ms</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+
+        <!-- TAB 1: Live Call Demo (Main AI Voice Assistant) -->
+        <section id="tab-live-call" class="tab-content active">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Voice AI Call Simulator</h1>
+              <p class="page-subtitle">Test real-time conversational streaming audio and text transcription</p>
+            </div>
+            <div class="page-actions">
+              <span class="tag-pill">WebSocket: ws://localhost:3000</span>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- Voice Call Card -->
+            <div class="card chat-card">
+              <div class="header">
+                <div class="header-brand">
+                  <div class="avatar">AI</div>
+                  <div class="header-info">
+                    <h1>Support Agent</h1>
+                    <div class="status">
+                      <span class="status-sub">Ready to receive speech</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="call-badge">Interactive Mode</div>
+              </div>
+
+              <!-- Chat Log (Preserving chat-log ID) -->
+              <div id="chat-log" class="chat-log">
+                <div class="bubble-container ai">
+                  <div class="bubble">Hi! How can I help you today?</div>
+                  <div class="timestamp">Just now</div>
+                </div>
+              </div>
+
+              <!-- Controls (Preserving start button & btn-text) -->
+              <div class="controls">
+                <button id="start" class="call-btn" disabled>
+                  <svg class="mic-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                  </svg>
+                  <span id="btn-text">Connecting...</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Call Insights Side Panel -->
+            <div class="insights-column">
+              <div class="card insight-card">
+                <h3>Session Telemetry</h3>
+                <div class="metric-row">
+                  <span class="metric-label">Connection</span>
+                  <span class="metric-value green">Active</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Speech Model</span>
+                  <span class="metric-value">Nemotron-70B</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Sampling Rate</span>
+                  <span class="metric-value">16000 Hz</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Audio Protocol</span>
+                  <span class="metric-value">PCM / Audio Buffer</span>
+                </div>
+              </div>
+
+              <div class="card insight-card">
+                <h3>Quick Test Commands</h3>
+                <ul class="quick-hints">
+                  <li>"Hello, what can you help me with?"</li>
+                  <li>"Can you explain your features?"</li>
+                  <li>"What is the system latency?"</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: Analytics & History (Demo Page 1) -->
+        <section id="tab-analytics" class="tab-content">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Call Analytics & History</h1>
+              <p class="page-subtitle">Overview of call performance, response rates, and recent interactions</p>
+            </div>
+            <button class="btn-primary">Export CSV</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-title">Total Completed Calls</div>
+              <div class="stat-number">1,248</div>
+              <div class="stat-trend positive">+14.2% this week</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Avg Latency</div>
+              <div class="stat-number">285 ms</div>
+              <div class="stat-trend positive">-12ms improvement</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Intent Accuracy</div>
+              <div class="stat-number">98.4%</div>
+              <div class="stat-trend positive">+0.8% accuracy</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Total Audio Processed</div>
+              <div class="stat-number">42.5 hrs</div>
+              <div class="stat-trend neutral">Normal usage</div>
+            </div>
+          </div>
+
+          <div class="card data-table-card">
+            <h3>Recent Call Records</h3>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Session ID</th>
+                  <th>Timestamp</th>
+                  <th>Duration</th>
+                  <th>Tokens Used</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>sess_88f921a</code></td>
+                  <td>Today, 12:45 PM</td>
+                  <td>1m 24s</td>
+                  <td>420</td>
+                  <td><span class="badge-status success">Completed</span></td>
+                </tr>
+                <tr>
+                  <td><code>sess_73a110b</code></td>
+                  <td>Today, 11:20 AM</td>
+                  <td>0m 45s</td>
+                  <td>190</td>
+                  <td><span class="badge-status success">Completed</span></td>
+                </tr>
+                <tr>
+                  <td><code>sess_55c994e</code></td>
+                  <td>Yesterday, 04:15 PM</td>
+                  <td>2m 10s</td>
+                  <td>680</td>
+                  <td><span class="badge-status success">Completed</span></td>
+                </tr>
+                <tr>
+                  <td><code>sess_12d443c</code></td>
+                  <td>Yesterday, 02:05 PM</td>
+                  <td>0m 15s</td>
+                  <td>45</td>
+                  <td><span class="badge-status warning">User Disconnect</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- TAB 3: Agent Settings (Demo Page 2) -->
+        <section id="tab-settings" class="tab-content">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Agent Settings & Configuration</h1>
+              <p class="page-subtitle">Configure model temperature, system prompt, and voice parameters</p>
+            </div>
+            <button class="btn-primary">Save Changes</button>
+          </div>
+
+          <div class="settings-grid">
+            <div class="card settings-card">
+              <h3>System Prompt</h3>
+              <p class="field-desc">Instructions given to the AI model before starting the conversation.</p>
+              <textarea class="form-textarea" rows="5">You are an intelligent customer support assistant for Acme Corp. Be helpful, concise, professional, and clear in spoken English.</textarea>
+              
+              <div class="form-group" style="margin-top: 16px;">
+                <label>Model Engine</label>
+                <select class="form-select">
+                  <option selected>nvidia/llama-3.1-nemotron-70b-instruct</option>
+                  <option>openai/gpt-4o-mini</option>
+                  <option>claude-3-5-sonnet</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="card settings-card">
+              <h3>Voice & Audio Parameters</h3>
+              <div class="form-group">
+                <label>Voice Profile</label>
+                <select class="form-select">
+                  <option selected>en-US-Neural-Standard-Female</option>
+                  <option>en-US-Neural-Deep-Male</option>
+                  <option>en-GB-Neural-Clara</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Temperature (Creativity): <span>0.5</span></label>
+                <input type="range" class="form-range" min="0" max="1" step="0.1" value="0.5">
+              </div>
+
+              <div class="form-group">
+                <label>Recording Window Duration</label>
+                <input type="text" class="form-input" value="5000 ms (5 seconds)" readonly>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: Developer Logs (Demo Page 3) -->
+        <section id="tab-logs" class="tab-content">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Developer & System Logs</h1>
+              <p class="page-subtitle">Real-time WebSocket event logs and socket trace messages</p>
+            </div>
+            <button class="btn-secondary" id="clear-logs-btn">Clear Logs</button>
+          </div>
+
+          <div class="card console-card">
+            <div class="console-header">
+              <span class="console-title">Live WebSocket Console Log</span>
+              <span class="console-badge">Subscribed to ws://localhost:3000</span>
+            </div>
+            <div class="console-body" id="console-body">
+              <div class="log-entry info"><span class="time">[12:57:00]</span> Socket initialized listening on port 3000</div>
+              <div class="log-entry success"><span class="time">[12:57:05]</span> Handshake established with server</div>
+              <div class="log-entry debug"><span class="time">[12:57:06]</span> Provider NVIDIA API Key verified</div>
+            </div>
+          </div>
+        </section>
+
+      </main>
     </div>
   </div>
 

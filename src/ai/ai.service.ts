@@ -10,7 +10,7 @@ export class AiService {
 
   async ask(prompt: string) {
     const response = await this.client.chat.completions.create({
-      model: 'meta/llama-3.1-70b-instruct', // example
+      model: 'meta/llama-3.2-11b-vision-instruct',
 
       messages: [
         {
