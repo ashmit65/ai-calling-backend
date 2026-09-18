@@ -6,9 +6,18 @@ interface FaqEntry {
   answer: string;
 }
 
+const rawFaqs: any = faqData;
+const parsedFaqs: FaqEntry[] = Array.isArray(rawFaqs)
+  ? rawFaqs
+  : Array.isArray(rawFaqs.default)
+    ? rawFaqs.default
+    : Object.values(rawFaqs).filter(
+        (x): x is FaqEntry => typeof x === 'object' && x !== null && 'keywords' in x,
+      );
+
 @Injectable()
 export class FaqService {
-  private readonly faqs: FaqEntry[] = faqData;
+  private readonly faqs: FaqEntry[] = parsedFaqs;
 
   lookup(transcript: string): { answer: string; matched: boolean } {
     const lowered = transcript.toLowerCase();
