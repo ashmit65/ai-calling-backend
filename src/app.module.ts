@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CallsModule } from './calls/calls.module';
@@ -26,6 +28,12 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'),
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 60,
+      },
+    ]),
     CallsModule,
     WorkflowsModule,
     TranscriptsModule,
@@ -43,6 +51,12 @@ import { join } from 'path';
     TtsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
