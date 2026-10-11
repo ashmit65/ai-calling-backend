@@ -33,4 +33,12 @@ export class CacheService {
       return null;
     }
   }
+
+  async ping(): Promise<boolean> {
+    try {
+      return (await this.client.ping()) === 'PONG';
+    } catch {
+      return false;
+    }
+  }
 }

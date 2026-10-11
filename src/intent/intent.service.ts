@@ -25,7 +25,7 @@ export class IntentService {
             confidence: parsed.confidence ?? 0.5,
           };
         }
-      } catch (_e) {
+      } catch {
         // Fallback if cached value is not valid JSON (old cache format)
         return { intent: cached as Intent, confidence: 1.0 };
       }

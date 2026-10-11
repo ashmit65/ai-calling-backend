@@ -12,7 +12,8 @@ const parsedFaqs: FaqEntry[] = Array.isArray(rawFaqs)
   : Array.isArray(rawFaqs.default)
     ? rawFaqs.default
     : Object.values(rawFaqs).filter(
-        (x): x is FaqEntry => typeof x === 'object' && x !== null && 'keywords' in x,
+        (x): x is FaqEntry =>
+          typeof x === 'object' && x !== null && 'keywords' in x,
       );
 
 @Injectable()
