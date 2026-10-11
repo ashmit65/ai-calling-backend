@@ -20,6 +20,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { OrchestratorModule } from './orchestrator/orchestrator.module';
 import { SttModule } from './media/stt/stt.module';
 import { TtsModule } from './media/tts/tts.module';
+import { HealthModule } from './health/health.module';
 import { join } from 'path';
 
 @Module({
@@ -49,6 +50,7 @@ import { join } from 'path';
     OrchestratorModule,
     SttModule,
     TtsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
