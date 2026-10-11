@@ -53,11 +53,14 @@ sequenceDiagram
 
 - **Real-Time WebSocket Gateway**: High-throughput duplex WebSocket audio streaming.
 - **Deepgram Nova-2 STT**: Accurate speech-to-text transcription with smart formatting.
-- **Intent Router & Decision Engine**: Automatically determines whether to route to a instant FAQ answer or a dynamic LLM response.
+- **Intent Router & Decision Engine**: Automatically determines whether to route to an instant FAQ answer or a dynamic LLM response.
 - **NVIDIA NIM LLM**: Powered by `meta/llama-3.2-11b-vision-instruct` for fast, natural conversation.
 - **ElevenLabs Flash v2.5 TTS**: Ultra-low latency voice synthesis using default voice IDs (Antoni).
 - **PostgreSQL & Prisma ORM**: Call session logging, transcripts, and analytics tracking.
 - **Redis Cache & BullMQ**: Caching intent queries and background task queueing.
+- **API Rate Limiting**: Global request throttling via `@nestjs/throttler` to safeguard AI inference budgets.
+- **System Observability**: Active `/health` endpoint monitoring PostgreSQL, Redis, latency, and memory footprint.
+- **Production Dockerization**: Multi-stage `Dockerfile` with non-root runner user and minimal image size.
 - **Automated CI/CD Pipeline**: GitHub Actions workflow running automated linting, unit tests, and TypeScript compilation checks on every commit.
 
 ---
@@ -73,7 +76,23 @@ sequenceDiagram
 | **Text-to-Speech** | ElevenLabs API (`eleven_flash_v2_5`, Voice: `ErXwobaYiN019PkySvjV`) |
 | **Database** | PostgreSQL + Prisma ORM |
 | **Caching/Queue** | Redis + BullMQ |
+| **Security/Rate Limiting** | `@nestjs/throttler` |
+| **Containerization** | Docker (Multi-stage build) |
 | **CI/CD** | GitHub Actions |
+
+---
+
+## 📡 REST API Endpoints
+
+While the core streaming runs over WebSockets, the backend also exposes several REST endpoints for management, health, and analytics:
+
+- **`GET /health`**: System health check verifying database and Redis connectivity, memory usage, and uptime.
+- **`GET /analytics/summary`**: Retrieve aggregated metrics (total calls, average latency, total duration).
+- **`GET /calls`**: List historical call logs and metadata from PostgreSQL.
+- **`POST /calls`**: Create a new manual call session entry.
+- **`POST /intent`**: Test the intent classification engine directly with a text prompt.
+- **`POST /tts`**: Generate TTS audio directly via HTTP.
+- **`POST /stt`**: Send an audio file to receive text transcription directly.
 
 ---
 
@@ -136,6 +155,16 @@ npm run dev
 ```
 
 Open `http://localhost:3000` in your browser to access the **VoxAI Voice Call Simulator**!
+
+### 5. Production Docker Deployment
+Build and run the backend using the multi-stage Docker container:
+```bash
+# Build the production image
+docker build -t voxai-backend:latest .
+
+# Run container with environment configuration
+docker run -p 3000:3000 --env-file .env voxai-backend:latest
+```
 
 ---
 
