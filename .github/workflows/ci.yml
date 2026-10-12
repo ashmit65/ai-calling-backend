@@ -33,5 +33,8 @@ jobs:
       - name: 6. Run Unit Tests
         run: npm run test
 
-      - name: 7. Build Application
+      - name: 7. Run E2E Tests
+        run: npm run test:e2e
+
+      - name: 8. Build Application
         run: npm run build

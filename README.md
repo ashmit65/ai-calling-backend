@@ -58,10 +58,11 @@ sequenceDiagram
 - **ElevenLabs Flash v2.5 TTS**: Ultra-low latency voice synthesis using default voice IDs (Antoni).
 - **PostgreSQL & Prisma ORM**: Call session logging, transcripts, and analytics tracking.
 - **Redis Cache & BullMQ**: Caching intent queries and background task queueing.
-- **API Rate Limiting**: Global request throttling via `@nestjs/throttler` to safeguard AI inference budgets.
+- **API Rate Limiting & Auth**: Global throttling (`@nestjs/throttler`) and API Key / Bearer authentication guarding REST APIs and WebSocket handshakes.
 - **System Observability**: Active `/health` endpoint monitoring PostgreSQL, Redis, latency, and memory footprint.
 - **Production Dockerization**: Multi-stage `Dockerfile` with non-root runner user and minimal image size.
-- **Automated CI/CD Pipeline**: GitHub Actions workflow running automated linting, unit tests, and TypeScript compilation checks on every commit.
+- **Dual Testing Strategy**: Comprehensive unit tests (`npm test`) and automated end-to-end integration tests (`npm run test:e2e`).
+- **Automated CI/CD Pipeline**: GitHub Actions workflow running automated linting, unit tests, E2E tests, and TypeScript compilation checks on every commit.
 
 ---
 
@@ -76,7 +77,8 @@ sequenceDiagram
 | **Text-to-Speech** | ElevenLabs API (`eleven_flash_v2_5`, Voice: `ErXwobaYiN019PkySvjV`) |
 | **Database** | PostgreSQL + Prisma ORM |
 | **Caching/Queue** | Redis + BullMQ |
-| **Security/Rate Limiting** | `@nestjs/throttler` |
+| **Security & Auth** | `@nestjs/throttler`, API Key & Bearer Token Guard |
+| **Testing** | Jest & Supertest (Unit + E2E) |
 | **Containerization** | Docker (Multi-stage build) |
 | **CI/CD** | GitHub Actions |
 
@@ -178,7 +180,8 @@ This project includes a complete **GitHub Actions CI/CD Pipeline** defined in `.
 3. **Prisma Generation**: Generates TypeScript client types (`npx prisma generate`).
 4. **Code Quality**: Runs `npm run lint` with ESLint rules.
 5. **Unit Tests**: Runs Jest test suite (`npm test`).
-6. **Build Compilation**: Verifies clean production TypeScript compilation (`npm run build`).
+6. **E2E Tests**: Runs Supertest End-to-End integration suite (`npm run test:e2e`).
+7. **Build Compilation**: Verifies clean production TypeScript compilation (`npm run build`).
 
 ---
 

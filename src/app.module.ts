@@ -23,6 +23,8 @@ import { TtsModule } from './media/tts/tts.module';
 import { HealthModule } from './health/health.module';
 import { join } from 'path';
 
+import { ApiKeyGuard } from './common/guards/api-key.guard';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -58,6 +60,10 @@ import { join } from 'path';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ApiKeyGuard,
     },
   ],
 })

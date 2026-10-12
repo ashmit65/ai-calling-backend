@@ -1,4 +1,9 @@
-const socket = io('ws://localhost:3000');
+const urlParams = new URLSearchParams(window.location.search);
+const apiKey = urlParams.get('apiKey') || localStorage.getItem('apiKey') || '';
+const socket = io({
+  auth: { apiKey },
+  query: { apiKey },
+});
 const startBtn = document.getElementById('start');
 const btnText = document.getElementById('btn-text');
 const statusText = document.getElementById('status-text');

@@ -21,7 +21,22 @@ export class AudioGateway {
   ) {}
 
   handleConnection(client: any) {
-    this.logger.log(`Client connected: ${client.id}`);
+    const expectedKey = process.env.API_KEY;
+    if (expectedKey) {
+      const clientKey =
+        client.handshake?.auth?.apiKey ||
+        client.handshake?.headers?.['x-api-key'] ||
+        client.handshake?.query?.apiKey;
+
+      if (clientKey !== expectedKey) {
+        this.logger.warn(
+          `Unauthorized WebSocket connection rejected: ${client.id}`,
+        );
+        client.disconnect(true);
+        return;
+      }
+    }
+    this.logger.log(`Client authenticated & connected: ${client.id}`);
   }
 
   handleDisconnect(client: any) {
