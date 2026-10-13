@@ -5,13 +5,20 @@ import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { CacheService } from '../src/redis/cache.service';
+import { LlmService } from '../src/llm/llm.service';
+
+// Set all required env vars BEFORE any module or class is instantiated.
+// This prevents LlmService (and others) from throwing in their constructors.
+process.env.API_KEY = 'test-secret-key';
+process.env.NVIDIA_API_KEY = 'test-nvidia-key';
+process.env.DEEPGRAM_API_KEY = 'test-deepgram-key';
+process.env.ELEVENLABS_API_KEY = 'test-elevenlabs-key';
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5433/test';
 
 describe('AI Calling Backend (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
-    process.env.API_KEY = 'test-secret-key';
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
@@ -19,14 +26,16 @@ describe('AI Calling Backend (e2e)', () => {
       .useValue({
         $queryRaw: jest.fn().mockResolvedValue([{ 1: 1 }]),
         call: {
-          findMany: jest.fn().mockResolvedValue([
-            {
-              id: '1',
-              phone: '+1234567890',
-              duration: 30,
-              createdAt: new Date(),
-            },
-          ]),
+          findMany: jest
+            .fn()
+            .mockResolvedValue([
+              {
+                id: '1',
+                phone: '+1234567890',
+                duration: 30,
+                createdAt: new Date(),
+              },
+            ]),
         },
       })
       .overrideProvider(CacheService)
@@ -35,6 +44,13 @@ describe('AI Calling Backend (e2e)', () => {
         get: jest.fn().mockResolvedValue(null),
         set: jest.fn().mockResolvedValue('OK'),
       })
+      .overrideProvider(LlmService)
+      .useValue({
+        ask: jest.fn().mockResolvedValue({
+          response: 'Hello! How can I help you today?',
+          tokenCount: 10,
+        }),
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -42,7 +58,9 @@ describe('AI Calling Backend (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   describe('Public Endpoints', () => {
