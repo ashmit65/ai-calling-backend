@@ -4,6 +4,7 @@ export type HandlerIdentifier =
   | 'faq'
   | 'workflow'
   | 'llm'
+  | 'rag'
   | 'human-transfer'
   | 'voicemail';
 

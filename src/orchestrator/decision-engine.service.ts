@@ -33,7 +33,7 @@ export class DecisionEngine {
 
     // Default to LLM fallback
     return {
-      handler: 'llm',
+      handler: 'rag',
       confidence: Math.max(0.1, 1.0 - confidence),
       reason: `Defaulting to LLM due to intent ${intent} and confidence ${confidence.toFixed(2)}`,
     };

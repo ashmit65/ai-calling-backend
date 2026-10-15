@@ -54,4 +54,16 @@ export class LlmService {
       };
     }
   }
+
+  async askGrounded(question: string, context: string): Promise<LlmResult> {
+    return this.askWithSystem(
+      question,
+      `You are a customer support agent. Answer only using the knowledge-base context below. Never use general knowledge or guess. If the context does not answer the question, say: I don't have that information available. I'll connect you with customer care.\n\nKnowledge-base context:\n${context}`,
+    );
+  }
+
+  private async askWithSystem(transcript: string, system: string): Promise<LlmResult> {
+    const completion = await this.client.chat.completions.create({ model: 'meta/llama-3.2-11b-vision-instruct', max_tokens: 300, messages: [{ role: 'system', content: system }, { role: 'user', content: transcript }] });
+    return { response: completion.choices?.[0]?.message?.content ?? 'I apologize, I could not generate a response.', tokenCount: (completion.usage?.prompt_tokens ?? 0) + (completion.usage?.completion_tokens ?? 0) };
+  }
 }

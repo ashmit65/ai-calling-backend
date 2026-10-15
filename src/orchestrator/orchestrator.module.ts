@@ -11,6 +11,8 @@ import { WorkflowsModule } from '../workflows/workflows.module';
 import { LlmModule } from '../llm/llm.module';
 import { CallsModule } from '../calls/calls.module';
 import { AnalyticsModule } from '../analytics/analytics.module';
+import { KnowledgeModule } from '../knowledge/knowledge.module';
+import { RagHandler } from './handlers/rag.handler';
 
 @Global()
 @Module({
@@ -21,6 +23,7 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     LlmModule,
     CallsModule,
     AnalyticsModule,
+    KnowledgeModule,
   ],
   providers: [
     DecisionEngine,
@@ -28,16 +31,18 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     FaqHandler,
     WorkflowHandler,
     LlmHandler,
+    RagHandler,
     {
       provide: CONVERSATION_HANDLERS,
       useFactory: (
         faq: FaqHandler,
         workflow: WorkflowHandler,
         llm: LlmHandler,
+        rag: RagHandler,
       ) => {
-        return [faq, workflow, llm];
+        return [faq, workflow, llm, rag];
       },
-      inject: [FaqHandler, WorkflowHandler, LlmHandler],
+      inject: [FaqHandler, WorkflowHandler, LlmHandler, RagHandler],
     },
   ],
   exports: [ConversationOrchestrator],
