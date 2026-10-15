@@ -1,8 +1,9 @@
 const urlParams = new URLSearchParams(window.location.search);
 const apiKey = urlParams.get('apiKey') || localStorage.getItem('apiKey') || '';
+const clientId = urlParams.get('clientId') || localStorage.getItem('clientId') || '';
 const socket = io({
-  auth: { apiKey },
-  query: { apiKey },
+  auth: { apiKey, clientId },
+  query: { apiKey, clientId },
 });
 const startBtn = document.getElementById('start');
 const btnText = document.getElementById('btn-text');
@@ -110,7 +111,14 @@ socket.on('connect', () => {
 socket.on('disconnect', () => {
   setStatus('Offline', 'recording'); // red dot
   setBtnState('Disconnected', true);
+  isCallActive = false;
   addConsoleLog('Disconnected from WebSocket server', 'info');
+});
+
+socket.on('connect_error', error => {
+  setStatus('Connection Error', 'recording');
+  setBtnState('Disconnected', true);
+  addConsoleLog(`WebSocket connection failed: ${error.message}`, 'debug');
 });
 
 // Received transcription of what the user said
@@ -129,27 +137,39 @@ socket.on('ai-text', text => {
 socket.on('audio-echo', data => {
   setStatus('Speaking', 'speaking');
   addConsoleLog(`Received audio payload buffer (${data.byteLength || data.length} bytes), playing output...`, 'debug');
-  
+
   const blob = new Blob([data], { type: 'audio/mpeg' });
-  const audio = new Audio(URL.createObjectURL(blob));
-  
-  audio.onended = () => {
+  const audioUrl = URL.createObjectURL(blob);
+  const audio = new Audio(audioUrl);
+  const finishPlayback = () => {
+    URL.revokeObjectURL(audioUrl);
     setStatus('Online');
     setBtnState('Start Call', false);
     isCallActive = false;
+  };
+
+  audio.onended = () => {
+    finishPlayback();
     addConsoleLog('Audio playback completed.', 'info');
   };
-  
+
+  audio.onerror = () => {
+    addConsoleLog('Audio playback failed in the browser.', 'debug');
+    finishPlayback();
+  };
+
   audio.play().catch(e => {
     console.error("Audio play blocked by browser", e);
     addConsoleLog(`Audio play error: ${e.message}`, 'debug');
+    finishPlayback();
   });
 });
 
 socket.on('audio-error', error => {
-  setStatus('Error', 'recording');
+  setStatus('Error', 'error');
   setBtnState('Start Call', false);
   isCallActive = false;
+  if (error?.message) appendBubble(error.message, 'error');
   addConsoleLog(`Server Audio Error: ${JSON.stringify(error)}`, 'debug');
 });
 
