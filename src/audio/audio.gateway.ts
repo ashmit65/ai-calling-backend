@@ -46,6 +46,7 @@ export class AudioGateway {
   @SubscribeMessage('audio')
   async handleAudio(client: any, payload: any) {
     this.logger.log(`Received audio payload from client: ${client.id}`);
+    let stage: 'transcription' | 'conversation' | 'speech' = 'transcription';
 
     try {
       // 1. Convert incoming raw WebM/Ogg audio to text (STT)
@@ -56,6 +57,10 @@ export class AudioGateway {
 
       if (!sttResult.transcript || sttResult.transcript.trim() === '') {
         this.logger.warn('Empty transcript received, skipping processing.');
+        client.emit('audio-error', {
+          stage,
+          message: 'No speech was detected. Try again and speak clearly.',
+        });
         return;
       }
 
@@ -63,32 +68,43 @@ export class AudioGateway {
       client.emit('user-text', sttResult.transcript);
 
       // 2. Process the text through the brain (Intent, NLP, and Logging)
+      stage = 'conversation';
       const orchestratorResponse = await this.orchestrator.process({
         phone: client.id, // using client ID as phone number for local testing
+        clientId: client.handshake?.auth?.clientId || process.env.DEFAULT_CLIENT_ID || 'default',
         transcript: sttResult.transcript,
       });
 
       this.logger.log(`AI Response: "${orchestratorResponse.text}"`);
+      client.emit('ai-text', orchestratorResponse.text);
 
       // 3. Synthesize the AI's text response back into speech (TTS)
+      stage = 'speech';
       const ttsResult = await this.ttsService.synthesize(
         orchestratorResponse.text,
       );
 
       // 4. Send the generated AI voice bytes back to the caller
       client.emit('audio-echo', ttsResult.audio);
-      client.emit('ai-text', orchestratorResponse.text); // Send text to frontend for visual feedback
 
       this.logger.log(
         `Successfully streamed audio response back to ${client.id}`,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const details = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : undefined;
       this.logger.error(
-        `Error in audio pipeline: ${error.message}`,
-        error.stack,
+        `Audio pipeline failed during ${stage}: ${details}`,
+        stack,
       );
-      // Optional: Emit an error event back to client
-      client.emit('audio-error', { message: 'Failed to process audio.' });
+
+      const message =
+        stage === 'speech'
+          ? 'Your text reply is ready, but speech audio could not be generated. Check the backend logs.'
+          : stage === 'conversation'
+            ? 'Your speech was transcribed, but the system could not process it. Check the backend logs.'
+            : 'Speech could not be transcribed. Check the backend logs.';
+      client.emit('audio-error', { stage, message });
     }
   }
 }

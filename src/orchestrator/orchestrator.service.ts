@@ -37,6 +37,7 @@ export class ConversationOrchestrator {
   async process(input: {
     phone: string;
     transcript: string;
+    clientId?: string;
   }): Promise<ConversationResponse> {
     const startTime = Date.now();
     this.logger.log(`Received process request for phone: ${input.phone}`);
@@ -60,6 +61,7 @@ export class ConversationOrchestrator {
     const context: ConversationContext = {
       callId: callRecord.id,
       phone: input.phone,
+      clientId: input.clientId || process.env.DEFAULT_CLIENT_ID || 'default',
       transcript: input.transcript,
       currentIntent: intent,
       confidence,

@@ -1,6 +1,7 @@
 import { Intent } from '../../intent/intent.service';
 
 export interface ConversationContext {
+  clientId: string;
   callId?: string;
   phone: string;
   transcript: string;

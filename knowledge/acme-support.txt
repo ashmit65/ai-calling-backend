@@ -1,0 +1,19 @@
+Company: Acme Support
+
+Question: What are your opening hours?
+Answer: We are open Monday through Friday from 9 AM to 6 PM EST. Weekend support is available for Enterprise customers.
+
+Question: What are your business hours?
+Answer: We are open Monday through Friday from 9 AM to 6 PM EST. Weekend support is available for Enterprise customers.
+
+Question: Who is the prime minister of India?
+Answer: This is outside Acme Support's services. Please contact customer care for assistance.
+
+Question: How can I contact customer care?
+Answer: Please contact Acme customer care for assistance with questions that are not covered in this knowledge base.
+
+Question: How do I book an appointment?
+Answer: Please provide your preferred date and time, and a support representative will help schedule your appointment.
+
+Question: How do I cancel an appointment?
+Answer: Contact customer care with your appointment details to request a cancellation.

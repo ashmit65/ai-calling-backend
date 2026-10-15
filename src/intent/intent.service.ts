@@ -34,7 +34,10 @@ export class IntentService {
     // simple rule‑based detection with continuous confidence score
     let intent: Intent = Intent.UNKNOWN;
     let confidence = 0.1;
-    const lowered = transcript.toLowerCase();
+    const lowered = transcript
+      .toLowerCase()
+      .replace(/^\s*(oh|okay|ok|well|um|uh| hey)[,\s]+/i, '')
+      .trim();
 
     if (
       lowered.includes('price') ||
@@ -49,6 +52,14 @@ export class IntentService {
       // higher confidence if it starts with the keyword, otherwise medium confidence
       confidence =
         lowered.startsWith('price') || lowered.startsWith('faq') ? 0.95 : 0.85;
+    } else if (
+      /^(how|what|can|where|when)\b/.test(lowered) &&
+      /(book|schedule|cancel|appointment)/.test(lowered)
+    ) {
+      // Questions about an action should be grounded in the client's knowledge base.
+      // Direct commands such as "cancel my appointment" remain workflows below.
+      intent = Intent.UNKNOWN;
+      confidence = 0.1;
     } else if (
       lowered.includes('book') ||
       lowered.includes('schedule') ||

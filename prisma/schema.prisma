@@ -17,12 +17,49 @@ model Business {
   createdAt DateTime @default(now())
 }
 
+model Client {
+  id           String              @id @default(uuid())
+  name         String
+  supportPhone String?
+  supportEmail String?
+  active       Boolean             @default(true)
+  createdAt    DateTime            @default(now())
+  documents    KnowledgeDocument[]
+}
+
+model KnowledgeDocument {
+  id         String           @id @default(uuid())
+  clientId   String
+  title      String
+  sourceType String           @default("text")
+  rawText    String
+  status     String           @default("ready")
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  client     Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  chunks     KnowledgeChunk[]
+  @@index([clientId])
+}
+
+model KnowledgeChunk {
+  id         String            @id @default(uuid())
+  documentId String
+  clientId   String
+  content    String
+  terms      String
+  createdAt  DateTime          @default(now())
+  document   KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  @@index([clientId])
+  @@index([documentId])
+}
+
 model Call {
   id          String   @id @default(uuid())
   phone       String
   transcript  String?
   intent      String?
   createdAt   DateTime @default(now())
+  clientId    String?
 }
 
 model User {
